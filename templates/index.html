@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="http://tablesorter.com/themes/blue/style.css">
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                        (i[r].q = i[r].q || []).push(arguments)
+                    }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                    m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', '{{ga_id}}', 'auto');
+        ga('send', 'pageview');
+    </script>
+    <script src="http://code.jquery.com/jquery.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdn.rawgit.com/christianbach/tablesorter/master/jquery.tablesorter.min.js"></script>
+    <title>Twidget 1.0</title>
+</head>
+
+<body>
+Data via Twitch API ;)
+<br/><br/>
+<div>Right now only showing a 400 games in the table, caching code would fix this.</div>
+<br/>
+
+<div>Total Games Online: <span id="total-games"></span></div>
+
+<table id="gamesTable" class="tablesorter" border="2" style="width:100%">
+    <thead>
+    <tr id="table-headings">
+        <th>Game</th>
+        <th>Viewers</th>
+        <th>Streamers</th>
+        <th>Viewers per Stream</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<div id="loading"> Loading... (try refreshing if it takes longer than two minutes)</div>
+
+<script>
+
+    function getTotal(){
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: '/twitch_total_games',
+            success: function (data) {
+                $("#total-games").append(data);
+            }
+        });
+    }
+
+    function updatePage(gameList) {
+        $.each(gameList, function (k, v) {
+            var viewsPer = Math.floor(v.viewers / v.channels);
+            $("#gamesTable tbody").append("<tr><td>" + v.game.name + "</td><td>" + v.viewers + "</td><td>" + v.channels + "</td><td>" + viewsPer + "</td></tr>");
+        });
+        $("#gamesTable").tablesorter({
+            sortList: [[1, 1]],
+            widgets: ['zebra']
+        });
+        $("#loading").remove();
+
+
+    }
+
+    function listGames() {
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: '/twitch_games',
+            success: function (data) {
+                gameList = [];
+                $.each(data, function (k, v) {
+                    gameList.push(v);
+                });
+                updatePage(gameList);
+            }
+        });
+    }
+    getTotal();
+    listGames();
+
+</script>
+
+</body>
+
+</html>
