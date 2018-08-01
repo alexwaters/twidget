@@ -1,0 +1,8 @@
+#Create a random flask app secret key
+secret_key = ""
+
+#twitch API Client ID
+client_id = ""
+
+#Google analytics ID
+google_analytics_id = ""
