@@ -1,10 +1,6 @@
 from flask_restful import Resource, reqparse
 from flask import jsonify
-import config
-import requests
-import json
-import requests_cache
-import time
+import config, requests, json, requests_cache, time
 
 now = time.ctime(int(time.time()))
 base_url = 'https://api.twitch.tv/kraken/'
